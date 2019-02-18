@@ -1,0 +1,8 @@
+target_organization: organization-A
+target_repositories:
+  - repository-A
+  - repository-B
+  - repository-C
+
+github_token: ===GITHUB TOKEN===
+zenhub_token: ===ZENHUB TOKEN===
