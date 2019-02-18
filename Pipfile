@@ -12,7 +12,7 @@ isort = "*"
 [packages]
 pygithub = "*"
 requests = "*"
-pyyaml = "*"
+pyyaml = "==4.2b4"
 
 [requires]
 python_version = "3.7"
