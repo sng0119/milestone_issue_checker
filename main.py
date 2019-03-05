@@ -35,6 +35,7 @@ def csv_output(**params):
         'pipeline',
         'assignee',
         'story_point',
+        'progress_rate',
         'working_time',
         'url'
     ]
@@ -72,17 +73,24 @@ def get_sprint_data(sprint_name):
         for _issue in repo.get_issues(milestone=milestone, state='all'):
             issue = z.get_issue(repo.id, _issue.number)
             issue_time = 0.0
+            progress_rate = 0
             if _issue.comments > 0:
                 for _comment in _issue.get_comments():
                     text = _issue.get_comment(_comment.id)
                     for l in text.body.split('\n'):
                         m = re.match(r'作業時間.* (\d+(\.\d+)?)h', l)
-                        if m:
+                        if m and issue_time == 0.0:
                             issue_time = m.groups()[0]
+                        m = re.match(r'進捗率.* (\d+?)%', l)
+                        if m and progress_rate == 0:
+                            progress_rate = m.groups()[0]
 
             assignee = None
             if _issue.assignees:
                 assignee = _issue.assignees[0].login
+
+            if issue["pipeline"]["name"] == 'Closed':
+                progress_rate = 100
 
             params = {
                 'name': repo.name,
@@ -92,6 +100,7 @@ def get_sprint_data(sprint_name):
                 'assignee': assignee,
                 'story_point': issue.get("estimate", {}).get("value"),
                 'working_time': issue_time,
+                'progress_rate': progress_rate,
                 'url': f'https://github.com/pathee/{repo.name}/issues/{_issue.number}'  # NOQA
             }
             csv_output(**params)
